@@ -1,3 +1,4 @@
+from welfarekata.webapp.repositories.django_account_repository import DjangoAccountRepository
 from welfarekata.webapp.domain.exceptions import AccountAlreadyActivatedException
 from welfarekata.webapp.serializers.requests.account.account_create_serializer import AccountCreateSerializer
 from welfarekata.webapp.serializers.responses.account_info_serializer import AccountSerializer
@@ -18,7 +19,7 @@ class AccountViewSet(ViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
         account_id = serialized_id.validated_data["id"]
-        account_dto = AccountService.get_account(account_id=account_id)
+        account_dto = AccountService(DjangoAccountRepository()).get_account(account_id=account_id)
 
         if account_dto is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -39,7 +40,7 @@ class AccountViewSet(ViewSet):
         validated_data = serialized_creation_request.validated_data
 
         try:
-            account_dto = AccountService.activate_account(**validated_data)
+            account_dto = AccountService(DjangoAccountRepository()).activate_account(**validated_data)
 
             return Response(
                 data=AccountSerializer(account_dto).data,
@@ -52,7 +53,7 @@ class AccountViewSet(ViewSet):
             )
 
     def list(self, request):
-        account_dtos = AccountService.list_accounts()
+        account_dtos = AccountService(DjangoAccountRepository()).list_accounts()
 
         return Response(
             data=[

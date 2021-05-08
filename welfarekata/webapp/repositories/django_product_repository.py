@@ -1,28 +1,26 @@
 import uuid
 from typing import Optional, List
 
+from welfarekata.webapp.domain import ProductRepository
 from welfarekata.webapp import domain
 from welfarekata.webapp import models as django_models
 from welfarekata.webapp.domain.exceptions import ProductNotFoundException
 
 
-class DjangoProductRepository:
-    @classmethod
-    def get(cls, product_id: uuid.UUID) -> Optional[domain.Product]:
+class DjangoProductRepository(ProductRepository):
+    def get(self, product_id: uuid.UUID) -> Optional[domain.Product]:
         try:
             django_product = django_models.Product.objects.get(external_id=product_id)
-            return cls._from_django_product_to_domain_product(django_product)
+            return self._from_django_product_to_domain_product(django_product)
 
         except django_models.Product.DoesNotExist:
             return None
 
-    @classmethod
-    def list(cls) -> List[domain.Product]:
+    def list(self) -> List[domain.Product]:
         django_products = django_models.Product.objects.all()
-        return [cls._from_django_product_to_domain_product(django_product) for django_product in django_products]
+        return [self._from_django_product_to_domain_product(django_product) for django_product in django_products]
 
-    @classmethod
-    def add(cls, product: domain.Product) -> domain.Product:
+    def add(self, product: domain.Product) -> domain.Product:
         django_product = django_models.Product(
             external_id=product.id,
             name=product.name,
@@ -31,10 +29,9 @@ class DjangoProductRepository:
         )
         django_product.save()
 
-        return cls._from_django_product_to_domain_product(django_product)
+        return self._from_django_product_to_domain_product(django_product)
 
-    @classmethod
-    def update(cls, product: domain.Product) -> domain.Product:
+    def update(self, product: domain.Product) -> domain.Product:
         try:
             django_product = django_models.Product.objects.get(external_id=product.id)
         except django_models.Product.DoesNotExist:
@@ -45,7 +42,7 @@ class DjangoProductRepository:
         django_product.type = django_models.Product.Type(product.type.value).value
         django_product.save()
 
-        return cls._from_django_product_to_domain_product(django_product)
+        return self._from_django_product_to_domain_product(django_product)
 
     @classmethod
     def _from_django_product_to_domain_product(cls, django_product: django_models.Product) -> domain.Product:

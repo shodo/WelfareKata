@@ -2,16 +2,17 @@ from datetime import datetime, date
 import uuid
 
 from welfarekata.webapp.domain.exceptions import AccountAlreadyActivatedException
+from welfarekata.webapp.repositories.django_account_repository import DjangoAccountRepository
 from welfarekata.webapp.services import AccountService
 from welfarekata.webapp.models.account import Account
 from django.test import TestCase
 
 
 class TestAccountService(TestCase):
-    def test_activate_account(self):
+    def test_create_account(self):
         # Setup
         employee_id = uuid.uuid4()
-        created_account_dto = AccountService.activate_account(employee_id)
+        created_account_dto = AccountService(DjangoAccountRepository()).activate_account(employee_id)
 
         accounts_on_db = Account.objects.all()
         self.assertEqual(len(accounts_on_db), 1)
@@ -32,8 +33,8 @@ class TestAccountService(TestCase):
         employee_id = uuid.uuid4()
 
         with self.assertRaises(AccountAlreadyActivatedException):
-            AccountService.activate_account(employee_id)
-            AccountService.activate_account(employee_id)
+            AccountService(DjangoAccountRepository()).activate_account(employee_id)
+            AccountService(DjangoAccountRepository()).activate_account(employee_id)
 
     def test_get_account(self):
         # Setup
@@ -42,7 +43,7 @@ class TestAccountService(TestCase):
                           creation_date=date(2015, 1, 1))
         account.save()
 
-        account_dto = AccountService.get_account(
+        account_dto = AccountService(DjangoAccountRepository()).get_account(
             account_id=account.external_id)
 
         self.assertIsNotNone(account_dto)
@@ -63,7 +64,7 @@ class TestAccountService(TestCase):
                               creation_date=datetime(2015, 1, 1))
         account_two.save()
 
-        account_dtos = AccountService.list_accounts()
+        account_dtos = AccountService(DjangoAccountRepository()).list_accounts()
 
         self.assertIsNotNone(account_dtos)
         self.assertEqual(len(account_dtos), 2)

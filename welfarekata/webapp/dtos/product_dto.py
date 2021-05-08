@@ -23,5 +23,5 @@ class ProductDto:
             id=product.id,
             name=product.name,
             description=product.description,
-            type=ProductDto.Type(product.type.value),
+            type=ProductDto.Type(product.type.value)
         )

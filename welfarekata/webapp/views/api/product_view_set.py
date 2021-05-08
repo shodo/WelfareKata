@@ -1,3 +1,5 @@
+from welfarekata.webapp.repositories.django_product_repository import DjangoProductRepository
+from welfarekata.webapp.domain.repositories.product_repository import ProductRepository
 from welfarekata.webapp.serializers.requests.product import ProductCreateSerializer
 from welfarekata.webapp.serializers.requests.product import ProductPartialUpdateSerializer
 from welfarekata.webapp.serializers.requests import ExternalIdSerializer
@@ -18,7 +20,7 @@ class ProductViewSet(ViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
         product_id = serialized_id.validated_data["id"]
-        product_dto = ProductService.get_product(product_id=product_id)
+        product_dto = ProductService(DjangoProductRepository()).get_product(product_id=product_id)
 
         if product_dto is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -37,7 +39,7 @@ class ProductViewSet(ViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
         validated_data = serialized_creation_request.validated_data
-        product_dto = ProductService.create_product(**validated_data)
+        product_dto = ProductService(DjangoProductRepository()).create_product(**validated_data)
 
         return Response(
             data=ProductSerializer(product_dto).data,
@@ -45,7 +47,7 @@ class ProductViewSet(ViewSet):
         )
 
     def list(self, request):
-        product_dtos = ProductService.list_products()
+        product_dtos = ProductService(DjangoProductRepository()).list_products()
 
         return Response(
             data=[
@@ -74,8 +76,7 @@ class ProductViewSet(ViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
         validated_data = serialized_partial_update_request.validated_data
-        product_dto = ProductService.update_product(employee_id,
-                                                    **validated_data)
+        product_dto = ProductService(DjangoProductRepository()).update_product(employee_id, **validated_data)
 
         return Response(
             data=ProductSerializer(product_dto).data,
