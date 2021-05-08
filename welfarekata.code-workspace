@@ -1,0 +1,28 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			".vscode/": true,
+			"**/__pycache__/": true
+		},
+		"python.formatting.provider": "yapf",
+		"editor.formatOnSave": true,
+		"djangoTestRunner.xmlRunnerReportPath": "test-results/testreport",
+		"djangoTestRunner.pythonInterpreter": "~/.pyenv/versions/welfare-kata/bin/python",
+		"python.testing.unittestArgs": [
+			"-v",
+			"-s",
+			"${workspaceFolder}/",
+			"-p",
+			"test_*.py"
+		],
+		"python.testing.unittestEnabled": true,
+		"python.testing.pytestEnabled": false,
+		"python.testing.nosetestsEnabled": false,
+		"python.pythonPath": "~/.pyenv/versions/3.9.0/envs/welfare-kata/bin/python"
+	}
+}
