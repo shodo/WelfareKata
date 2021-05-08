@@ -1,4 +1,4 @@
-from welfarekata.webapp.exceptions import NoEnoughCreditsException
+from welfarekata.webapp.domain.exceptions import NoEnoughCreditsException
 from welfarekata.webapp.serializers.requests.purchase.purchase_create_serializer import PurchaseCreateSerializer
 from welfarekata.webapp.serializers.responses.purchase_serializer import PurchaseSerializer
 from welfarekata.webapp.services.purchase_service import PurchaseService

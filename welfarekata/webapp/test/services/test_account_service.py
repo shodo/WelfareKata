@@ -1,7 +1,7 @@
 from datetime import datetime, date
 import uuid
 
-from welfarekata.webapp.exceptions import AccountAlreadyActivatedException
+from welfarekata.webapp.domain.exceptions import AccountAlreadyActivatedException
 from welfarekata.webapp.services import AccountService
 from welfarekata.webapp.models.account import Account
 from django.test import TestCase

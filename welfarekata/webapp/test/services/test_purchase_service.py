@@ -1,10 +1,10 @@
-from datetime import datetime, tzinfo
+from datetime import datetime
 from unittest import mock
 import uuid
-
 from dateutil.tz import UTC
-
-from welfarekata.webapp.exceptions import AccountNotFoundException, NoEnoughCreditsException, ProductNotFoundException
+from welfarekata.webapp.domain.exceptions import (
+    ProductNotFoundException, AccountNotFoundException, NoEnoughCreditsException
+)
 from welfarekata.webapp.models.account import Account
 from welfarekata.webapp.services.purchase_service import PurchaseService
 from welfarekata.webapp.models.purchase import Purchase

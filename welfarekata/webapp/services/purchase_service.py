@@ -1,7 +1,10 @@
 import uuid
 from typing import Optional, List
-from welfarekata.webapp.exceptions import NoEnoughCreditsException
-from welfarekata.webapp.exceptions import ProductNotFoundException, AccountNotFoundException
+from welfarekata.webapp.domain.exceptions import (
+    NoEnoughCreditsException,
+    ProductNotFoundException,
+    AccountNotFoundException,
+)
 from welfarekata.webapp.services.pricing_service import PricingService
 from welfarekata.webapp.models.purchase import Purchase
 from welfarekata.webapp.dtos.purchase_dto import PurchaseDto
