@@ -3,7 +3,7 @@ from datetime import date
 import uuid
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=False)
 class Account:
     employee_id: uuid.UUID
     activation_date: date

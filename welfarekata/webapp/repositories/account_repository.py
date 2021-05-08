@@ -1,12 +1,12 @@
 import uuid
 from typing import Optional, List
 
-from welfarekata.webapp.domain.exceptions import AccountNotFoundException
+from webapp.domain.exceptions import AccountNotFoundException
 from welfarekata.webapp import domain
 from welfarekata.webapp import models as django_models
 
 
-class DjangoAccountRepository:
+class AccountRepository:
     @classmethod
     def get(cls, account_id: uuid.UUID, for_update=False) -> Optional[domain.Account]:
         try:
@@ -22,13 +22,9 @@ class DjangoAccountRepository:
             return None
 
     @classmethod
-    def list(cls, employee_id=None) -> List[domain.Account]:
-        django_accounts = django_models.Account.objects
-
-        if employee_id is not None:
-            django_accounts = django_accounts.filter(employee_external_id=employee_id)
-
-        return [cls._from_django_account_to_domain_account(django_account) for django_account in django_accounts.all()]
+    def list(cls) -> List[domain.Account]:
+        django_accounts = django_models.Account.objects.all()
+        return [cls._from_django_account_to_domain_account(django_account) for django_account in django_accounts]
 
     @classmethod
     def add(cls, account: domain.Account) -> domain.Account:

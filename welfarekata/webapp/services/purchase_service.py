@@ -1,54 +1,60 @@
 import uuid
+from datetime import datetime
 from typing import Optional, List
+
+from dateutil.tz import tz
+
+from webapp.repositories.django_account_repository import DjangoAccountRepository
+from webapp.repositories.django_product_repository import DjangoProductRepository
+from webapp.repositories.django_purchase_repository import DjangoPurchaseRepository
 from welfarekata.webapp.domain.exceptions import (
     NoEnoughCreditsException,
     ProductNotFoundException,
     AccountNotFoundException,
 )
 from welfarekata.webapp.services.pricing_service import PricingService
-from welfarekata.webapp.models.purchase import Purchase
+from welfarekata.webapp.domain.entities.purchase import Purchase
 from welfarekata.webapp.dtos.purchase_dto import PurchaseDto
-from welfarekata.webapp.models.product import Product
 from django.db import transaction
-from welfarekata.webapp.models import Account
 
 
 class PurchaseService:
     @classmethod
     def get_purchase(cls, purchase_id: uuid.UUID) -> Optional[PurchaseDto]:
-        try:
-            purchase = Purchase.objects.get(external_id=purchase_id)
-            return PurchaseDto.from_orm(purchase)
-        except Account.DoesNotExist:
-            return None
+        purchase = DjangoPurchaseRepository.get(purchase_id)
+        return PurchaseDto.from_entity(purchase) if purchase else None
 
     @classmethod
     def do_purchase(cls, account_id: uuid.UUID, product_id: uuid.UUID) -> PurchaseDto:
-        try:
-            with transaction.atomic():
-                account: Account = Account.objects.select_for_update().get(
-                    external_id=account_id)
+        with transaction.atomic():
+            account = DjangoAccountRepository.get(account_id, for_update=True)
+            if account is None:
+                raise AccountNotFoundException()
 
-                product: Product = Product.objects.get(external_id=product_id)
+            product = DjangoProductRepository.get(product_id)
+            if product is None:
+                raise ProductNotFoundException()
 
-                price = PricingService.calculate_price(Product.Type(product.type), account.creation_date)
+            price = PricingService.calculate_price(product.type, account.activation_date)
 
-                if account.credits < price:
-                    raise NoEnoughCreditsException()
+            if account.credits < price:
+                raise NoEnoughCreditsException()
 
-                account.credits -= price
-                account.save()
+            account.credits -= price
+            DjangoAccountRepository.update(account)
 
-                purchase = Purchase(account=account, product=product, spent_credits=price)
-                purchase.save()
+            purchase = Purchase(
+                account_id=account_id,
+                product_id=product_id,
+                credits=price,
+                creation_date=datetime.now(tz=tz.tzutc())
+            )
 
-                return PurchaseDto.from_orm(purchase)
-        except Account.DoesNotExist:
-            raise AccountNotFoundException()
-        except Product.DoesNotExist:
-            raise ProductNotFoundException()
+            DjangoPurchaseRepository.add(purchase)
+
+            return PurchaseDto.from_entity(purchase)
 
     @classmethod
     def list_purchases(cls) -> List[PurchaseDto]:
-        purchases = Purchase.objects.all()
-        return [PurchaseDto.from_orm(purchase) for purchase in purchases]
+        purchases = DjangoPurchaseRepository.list()
+        return [PurchaseDto.from_entity(purchase) for purchase in purchases]
