@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=False)
 class Product:
     class Type(Enum):
         BASIC = "Basic"

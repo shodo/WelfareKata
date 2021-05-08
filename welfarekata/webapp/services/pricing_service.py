@@ -1,5 +1,6 @@
 from datetime import date
-from welfarekata.webapp.models.product import Product
+
+from welfarekata.webapp.domain import Product
 
 
 class PricingService:

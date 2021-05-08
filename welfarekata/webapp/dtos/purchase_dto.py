@@ -1,7 +1,8 @@
 from datetime import datetime
 import uuid
 from dataclasses import dataclass
-from welfarekata.webapp.models.purchase import Purchase
+
+from welfarekata.webapp.domain import Purchase
 
 
 @dataclass(frozen=True)
@@ -13,9 +14,9 @@ class PurchaseDto:
     creation_date: datetime
 
     @classmethod
-    def from_orm(cls, purchase: Purchase) -> "PurchaseDto":
-        return PurchaseDto(id=purchase.external_id,
-                           account_id=purchase.account.external_id,
-                           product_id=purchase.product.external_id,
-                           credits=purchase.spent_credits,
+    def from_entity(cls, purchase: Purchase) -> "PurchaseDto":
+        return PurchaseDto(id=purchase.id,
+                           account_id=purchase.account_id,
+                           product_id=purchase.product_id,
+                           credits=purchase.credits,
                            creation_date=purchase.creation_date)

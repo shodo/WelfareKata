@@ -1,8 +1,11 @@
 import uuid
+from datetime import date
 from typing import Optional, List
+
+from welfarekata.webapp.repositories.django_account_repository import DjangoAccountRepository
 from welfarekata.webapp.domain.exceptions import AccountAlreadyActivatedException
 from welfarekata.webapp.dtos.account_dto import AccountDto
-from welfarekata.webapp.models import Account
+from welfarekata.webapp.domain.entities.account import Account
 
 
 class AccountService:
@@ -10,26 +13,22 @@ class AccountService:
 
     @classmethod
     def get_account(cls, account_id: uuid.UUID) -> Optional[AccountDto]:
-        try:
-            account = Account.objects.get(external_id=account_id)
-            return AccountDto.from_orm(account)
-
-        except Account.DoesNotExist:
-            return None
+        account = DjangoAccountRepository.get(account_id)
+        return AccountDto.from_entity(account)
 
     @classmethod
     def list_accounts(cls) -> List[AccountDto]:
-        accounts = Account.objects.all()
-        return [AccountDto.from_orm(account) for account in accounts]
+        accounts = DjangoAccountRepository.list()
+        return [AccountDto.from_entity(account) for account in accounts]
 
     @classmethod
     def activate_account(cls, employee_id: uuid.UUID,) -> AccountDto:
-        accounts_with_same_employee_count = Account.objects.filter(employee_external_id=employee_id).count()
+        accounts_with_same_employee_count = len(DjangoAccountRepository.list(employee_id))
 
         if accounts_with_same_employee_count > 0:
             raise AccountAlreadyActivatedException()
 
-        account = Account(external_id=uuid.uuid4(), employee_external_id=employee_id, credits=cls.STARTING_CREDITS)
-        account.save()
+        account = Account(employee_id=employee_id, activation_date=date.today(), credits=cls.STARTING_CREDITS)
+        DjangoAccountRepository.add(account)
 
-        return AccountDto.from_orm(account)
+        return AccountDto.from_entity(account)
