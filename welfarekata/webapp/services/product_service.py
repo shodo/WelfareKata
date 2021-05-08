@@ -1,12 +1,7 @@
 import uuid
-from datetime import date
 from typing import Optional, List
 from welfarekata.webapp.models.product import Product
 from welfarekata.webapp.dtos.product_dto import ProductDto
-from welfarekata.webapp.dtos.account_dto import AccountDto
-
-from django.db import transaction
-
 from welfarekata.webapp.models import Account
 
 
@@ -25,16 +20,8 @@ class ProductService:
         return [ProductDto.from_orm(product) for product in products]
 
     @classmethod
-    def create_product(
-        cls,
-        name: str,
-        description: str,
-        type: ProductDto.Type,
-    ) -> ProductDto:
-        product = Product(external_id=uuid.uuid4(),
-                          name=name,
-                          description=description,
-                          type=type.value)
+    def create_product(cls, name: str, description: str, type: ProductDto.Type) -> ProductDto:
+        product = Product(external_id=uuid.uuid4(), name=name, description=description, type=type.value)
         product.save()
 
         return ProductDto.from_orm(product)
@@ -43,9 +30,9 @@ class ProductService:
     def update_product(
         cls,
         product_id: uuid.UUID,
-        name: str,
-        description: str,
-        type: ProductDto.Type,
+        name: str = None,
+        description: str = None,
+        type: ProductDto.Type = None,
     ) -> ProductDto:
         product = Product.objects.get(external_id=product_id)
 

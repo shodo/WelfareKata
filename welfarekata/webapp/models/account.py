@@ -1,4 +1,6 @@
 import uuid
+from datetime import date
+
 from django.db import models
 
 
@@ -25,5 +27,5 @@ class Account(models.Model):
     creation_date = models.DateField(
         null=False,
         blank=False,
-        auto_now_add=True,
+        default=date.today
     )

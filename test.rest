@@ -1,0 +1,59 @@
+### Create Account
+POST http://localhost:8000/api/v1/accounts/
+Content-Type: application/json
+
+{
+  "employee_id": "b07c88b9-5480-4d95-b7ac-2f6d2f6a3c02"
+}
+
+### Retrieve account
+GET http://localhost:8000/api/v1/accounts/86c0f076-8422-493c-acd1-b9697d581147
+Accept: application/json
+
+### list accounts
+GET http://localhost:8000/api/v1/accounts/
+Accept: application/json
+
+
+### Create Product
+POST http://localhost:8000/api/v1/products/
+Content-Type: application/json
+
+{
+  "name": "Dinner for two",
+  "description": "A dinner for two at Da Michele",
+  "type": "Premium"
+}
+
+### list products
+GET http://localhost:8000/api/v1/products/
+Accept: application/json
+
+### retrieve products
+GET http://localhost:8000/api/v1/products/49661942-3e4e-4816-bc7e-ef8d78351fe6
+Accept: application/json
+
+### partial update
+PATCH http://localhost:8000/api/v1/products/49661942-3e4e-4816-bc7e-ef8d78351fe6/
+Content-Type: application/json
+
+{
+  "description": "A dinner for two at Da Pino"
+}
+
+### create purchase
+POST http://localhost:8000/api/v1/purchases/
+Content-Type: application/json
+
+{
+  "account_id": "86c0f076-8422-493c-acd1-b9697d581147",
+  "product_id": "974276c8-9b0c-4974-959d-f64de8364dab"
+}
+
+### list purchases
+GET http://localhost:8000/api/v1/purchases/
+Accept: application/json
+
+### retrieve purchase
+GET http://localhost:8000/api/v1/purchases/24c8b48b-5c93-44ea-8a6f-e3adbac82a22
+Accept: application/json

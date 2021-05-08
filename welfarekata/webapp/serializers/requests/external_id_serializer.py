@@ -3,7 +3,6 @@ from rest_framework.serializers import Serializer
 
 
 class ExternalIdSerializer(Serializer):
-
     id = serializers.UUIDField(allow_null=False, required=True)
 
     def to_internal_value(self, data):

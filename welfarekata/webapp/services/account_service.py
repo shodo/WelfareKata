@@ -1,10 +1,7 @@
 import uuid
-from datetime import date
 from typing import Optional, List
+from welfarekata.webapp.exceptions import AccountAlreadyActivatedException
 from welfarekata.webapp.dtos.account_dto import AccountDto
-
-from django.db import transaction
-
 from welfarekata.webapp.models import Account
 
 
@@ -26,13 +23,13 @@ class AccountService:
         return [AccountDto.from_orm(account) for account in accounts]
 
     @classmethod
-    def create_account(
-        cls,
-        employee_id: uuid.UUID,
-    ) -> AccountDto:
-        account = Account(external_id=uuid.uuid4(),
-                          employee_id=employee_id,
-                          credits=cls.STARTING_CREDITS)
+    def activate_account(cls, employee_id: uuid.UUID,) -> AccountDto:
+        accounts_with_same_employee_count = Account.objects.filter(employee_external_id=employee_id).count()
+
+        if accounts_with_same_employee_count > 0:
+            raise AccountAlreadyActivatedException()
+
+        account = Account(external_id=uuid.uuid4(), employee_external_id=employee_id, credits=cls.STARTING_CREDITS)
         account.save()
 
         return AccountDto.from_orm(account)

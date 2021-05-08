@@ -1,11 +1,7 @@
 from dataclasses import dataclass
 from datetime import date
-from typing import List
 import uuid
 from welfarekata.webapp.models.account import Account
-
-from welfarekata.webapp.dtos.account_info_dto import AccountInfoDto
-from welfarekata.webapp.dtos.purchase_dto import PurchaseDto
 
 
 @dataclass(frozen=True)

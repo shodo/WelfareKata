@@ -1,15 +1,15 @@
-from welfarekata.webapp.serializers.requests.product import ProductCreateSerializer
-from welfarekata.webapp.serializers.requests.product import ProductPartialUpdateSerializer
+from welfarekata.webapp.exceptions import AccountAlreadyActivatedException
+from welfarekata.webapp.serializers.requests.account.account_create_serializer import AccountCreateSerializer
+from welfarekata.webapp.serializers.responses.account_info_serializer import AccountSerializer
+from welfarekata.webapp.services import AccountService
 from welfarekata.webapp.serializers.requests import ExternalIdSerializer
-from welfarekata.webapp.serializers.responses import ProductSerializer
-from welfarekata.webapp.services import ProductService
 
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.viewsets import ViewSet
 
 
-class AccoubntViewSet(ViewSet):
+class AccountViewSet(ViewSet):
     def retrieve(self, request, pk):
         serialized_id = ExternalIdSerializer(data=pk)
 
@@ -17,19 +17,19 @@ class AccoubntViewSet(ViewSet):
             return Response(data=serialized_id.errors,
                             status=status.HTTP_400_BAD_REQUEST)
 
-        product_id = serialized_id.validated_data["id"]
-        product_dto = ProductService.get_product(product_id=product_id)
+        account_id = serialized_id.validated_data["id"]
+        account_dto = AccountService.get_account(account_id=account_id)
 
-        if product_dto is None:
+        if account_dto is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return Response(
-            data=ProductSerializer(product_dto).data,
+            data=AccountSerializer(account_dto).data,
             status=status.HTTP_200_OK,
         )
 
     def create(self, request):
-        serialized_creation_request = ProductCreateSerializer(
+        serialized_creation_request = AccountCreateSerializer(
             data=request.data)
 
         if not serialized_creation_request.is_valid():
@@ -37,47 +37,26 @@ class AccoubntViewSet(ViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
         validated_data = serialized_creation_request.validated_data
-        product_dto = ProductService.create_product(**validated_data)
 
-        return Response(
-            data=ProductSerializer(product_dto).data,
-            status=status.HTTP_201_CREATED,
-        )
+        try:
+            account_dto = AccountService.activate_account(**validated_data)
+
+            return Response(
+                data=AccountSerializer(account_dto).data,
+                status=status.HTTP_201_CREATED,
+            )
+        except AccountAlreadyActivatedException:
+            return Response(
+                data={"message": "Account already activated"},
+                status=status.HTTP_409_CONFLICT
+            )
 
     def list(self, request):
-        product_dtos = ProductService.list_products()
+        account_dtos = AccountService.list_accounts()
 
         return Response(
             data=[
-                ProductSerializer(product_dto).data
-                for product_dto in product_dtos
+                AccountSerializer(account_dto).data for account_dto in account_dtos
             ],
-            status=status.HTTP_200_OK,
-        )
-
-    def partial_update(self, request, pk):
-        serialized_id = ExternalIdSerializer(data=pk)
-
-        if not serialized_id.is_valid():
-            return Response(
-                data=serialized_id.errors,
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        employee_id = serialized_id.validated_data["id"]
-
-        serialized_partial_update_request = ProductPartialUpdateSerializer(
-            data=request.data)
-
-        if not serialized_partial_update_request.is_valid():
-            return Response(data=serialized_partial_update_request.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
-
-        validated_data = serialized_partial_update_request.validated_data
-        product_dto = ProductService.update_product(employee_id,
-                                                    **validated_data)
-
-        return Response(
-            data=ProductSerializer(product_dto).data,from typing import Any, Dict
             status=status.HTTP_200_OK,
         )
