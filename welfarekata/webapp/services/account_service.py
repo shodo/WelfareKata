@@ -1,6 +1,6 @@
 import uuid
 from typing import Optional, List
-from welfarekata.webapp.exceptions import AccountAlreadyActivatedException
+from welfarekata.webapp.domain.exceptions import AccountAlreadyActivatedException
 from welfarekata.webapp.dtos.account_dto import AccountDto
 from welfarekata.webapp.models import Account
 

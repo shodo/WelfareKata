@@ -1,8 +1,8 @@
-class AccountNotFoundException(Exception):
+class ProductNotFoundException(Exception):
     pass
 
 
-class ProductNotFoundException(Exception):
+class AccountNotFoundException(Exception):
     pass
 
 
