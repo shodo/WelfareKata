@@ -31,7 +31,7 @@ class AccountService:
         employee_id: uuid.UUID,
     ) -> AccountDto:
         account = Account(external_id=uuid.uuid4(),
-                          employee_id=employee_id,
+                          employee_external_id=employee_id,
                           credits=cls.STARTING_CREDITS)
         account.save()
 

@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.viewsets import ViewSet
 
 
-class AccoubntViewSet(ViewSet):
+class AccountViewSet(ViewSet):
     def retrieve(self, request, pk):
         serialized_id = ExternalIdSerializer(data=pk)
 
@@ -78,6 +78,6 @@ class AccoubntViewSet(ViewSet):
                                                     **validated_data)
 
         return Response(
-            data=ProductSerializer(product_dto).data,from typing import Any, Dict
+            data=ProductSerializer(product_dto).data,
             status=status.HTTP_200_OK,
         )

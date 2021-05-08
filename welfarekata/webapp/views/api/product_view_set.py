@@ -78,6 +78,6 @@ class ProductViewSet(ViewSet):
                                                     **validated_data)
 
         return Response(
-            data=ProductSerializer(product_dto).data,from typing import Any, Dict
+            data=ProductSerializer(product_dto).data,
             status=status.HTTP_200_OK,
         )

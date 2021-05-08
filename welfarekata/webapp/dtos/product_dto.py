@@ -22,5 +22,5 @@ class ProductDto:
             id=product.external_id,
             name=product.name,
             description=product.description,
-            type=ProductDto.Type[product.type.value],
+            type=ProductDto.Type(product.type),
         )

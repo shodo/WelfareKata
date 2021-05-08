@@ -16,9 +16,9 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.urls import path
-from welfarekata.webapp.urls import employees_router_v1
+from welfarekata.webapp.urls import webapp_router_v1
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^api/v1/', include(employees_router_v1.urls)),
+    url(r'^api/v1/', include(webapp_router_v1.urls)),
 ]
