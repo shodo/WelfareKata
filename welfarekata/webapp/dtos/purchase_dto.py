@@ -1,8 +1,9 @@
 from datetime import datetime
 import uuid
 from dataclasses import dataclass
+from welfarekata.webapp.models.purchase import Purchase
 
-from webapp.domain import Purchase
+from welfarekata.webapp.domain import Purchase
 
 
 @dataclass(frozen=True)

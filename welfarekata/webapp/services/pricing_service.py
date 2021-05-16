@@ -1,6 +1,6 @@
 from datetime import date
 
-from webapp.domain import Product
+from welfarekata.webapp.domain import Product
 
 
 class PricingService:

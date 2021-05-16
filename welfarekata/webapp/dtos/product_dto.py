@@ -2,7 +2,7 @@ import uuid
 from dataclasses import dataclass
 from enum import Enum
 
-from webapp.domain import Product
+from welfarekata.webapp.domain import Product
 
 
 @dataclass(frozen=True)
@@ -23,5 +23,5 @@ class ProductDto:
             id=product.id,
             name=product.name,
             description=product.description,
-            type=ProductDto.Type(product.type.value),
+            type=ProductDto.Type(product.type.value)
         )

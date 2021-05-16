@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import date
 import uuid
 
-from webapp.domain import Account
+from welfarekata.webapp.domain import Account
 
 
 @dataclass(frozen=True)

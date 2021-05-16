@@ -1,11 +1,11 @@
 from django.test import TestCase
 
+from welfarekata.webapp.repositories.django_product_repository import DjangoProductRepository
 from welfarekata.webapp import domain
 from welfarekata.webapp import models as django_models
-from welfarekata.webapp.repositories.django_product_repository import DjangoProductRepository
 
 
-class TestProductRepository(TestCase):
+class TestDjangoProductRepository(TestCase):
     def test_add(self):
         # Setup
         product = domain.Product(
@@ -15,7 +15,7 @@ class TestProductRepository(TestCase):
         )
 
         # SUT
-        added_product = DjangoProductRepository.add(product)
+        added_product = DjangoProductRepository().add(product)
         orm_added_product = django_models.Product.objects.all()[0]
 
         # Asserts
@@ -35,7 +35,7 @@ class TestProductRepository(TestCase):
         orm_product.save()
 
         # SUT
-        retrieved_product = DjangoProductRepository.get(orm_product.external_id)
+        retrieved_product = DjangoProductRepository().get(orm_product.external_id)
 
         # Asserts
         self.assertEqual(orm_product.external_id, retrieved_product.id)
@@ -60,7 +60,7 @@ class TestProductRepository(TestCase):
         orm_product_two.save()
 
         # SUT
-        retrieved_products = DjangoProductRepository.list()
+        retrieved_products = DjangoProductRepository().list()
 
         # Asserts
         retrieved_product_one = next(iter([product for product in retrieved_products
@@ -93,7 +93,7 @@ class TestProductRepository(TestCase):
             description="updated_description",
             type=domain.Product.Type.GOLD
         )
-        updated_product = DjangoProductRepository.update(new_product)
+        updated_product = DjangoProductRepository().update(new_product)
         updated_orm_product = django_models.Product.objects.get(id=orm_product.id)
 
         # Asserts
