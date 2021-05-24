@@ -1,6 +1,7 @@
 import uuid
 from datetime import date
 
+from django.db import transaction
 from django.test import TestCase
 
 from welfarekata.webapp.repositories.django_account_repository import DjangoAccountRepository
@@ -18,7 +19,7 @@ class TestDjangoAccountRepository(TestCase):
         )
 
         # SUT
-        added_account = DjangoAccountRepository().add(account)
+        added_account = DjangoAccountRepository(transaction.atomic()).add(account)
         orm_added_account = django_models.Account.objects.all()[0]
 
         # Asserts
@@ -38,8 +39,11 @@ class TestDjangoAccountRepository(TestCase):
         orm_account.save()
 
         # SUT
-        retrieved_account = DjangoAccountRepository().get(orm_account.external_id)
-        retrieved_account_for_update = DjangoAccountRepository().get(orm_account.external_id, for_update=True)
+        retrieved_account = DjangoAccountRepository(transaction.atomic()).get(orm_account.external_id)
+        retrieved_account_for_update = DjangoAccountRepository(transaction.atomic()).get(
+            orm_account.external_id,
+            for_update=True
+        )
 
         # Asserts
         self.assertEqual(orm_account.external_id, retrieved_account.id)
@@ -69,7 +73,7 @@ class TestDjangoAccountRepository(TestCase):
         orm_account_two.save()
 
         # SUT
-        retrieved_accounts = DjangoAccountRepository().list()
+        retrieved_accounts = DjangoAccountRepository(transaction.atomic()).list()
 
         # Asserts
         retrieved_account_one = next(iter([account for account in retrieved_accounts
@@ -104,7 +108,7 @@ class TestDjangoAccountRepository(TestCase):
         )
         orm_account.save()
 
-        updated_account = DjangoAccountRepository().update(new_account)
+        updated_account = DjangoAccountRepository(transaction.atomic()).update(new_account)
         updated_orm_account = django_models.Account.objects.get(id=orm_account.id)
 
         # Asserts

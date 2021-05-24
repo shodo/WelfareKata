@@ -1,6 +1,8 @@
 import uuid
 from typing import Optional, List
 
+from django.db import transaction
+
 from welfarekata.webapp.domain.exceptions import AccountNotFoundException
 from welfarekata.webapp.domain import AccountRepository
 from welfarekata.webapp import domain
@@ -8,6 +10,9 @@ from welfarekata.webapp import models as django_models
 
 
 class DjangoAccountRepository(AccountRepository):
+    def __init__(self, atomic: transaction.Atomic):
+        self.atomic = atomic
+
     def get(self, account_id: uuid.UUID, for_update=False) -> Optional[domain.Account]:
         try:
             base_query = django_models.Account.objects

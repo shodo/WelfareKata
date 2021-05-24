@@ -1,11 +1,11 @@
-from webapp.repositories.django_account_repository import DjangoAccountRepository
-from webapp.repositories.django_product_repository import DjangoProductRepository
-from webapp.repositories.django_purchase_repository import DjangoPurchaseRepository
-from webapp.repositories.django_unit_of_work import DjangoUnitOfWork
+from welfarekata.webapp.repositories.django_account_repository import DjangoAccountRepository
+from welfarekata.webapp.repositories.django_product_repository import DjangoProductRepository
+from welfarekata.webapp.repositories.django_purchase_repository import DjangoPurchaseRepository
+from welfarekata.webapp.repositories.django_unit_of_work import DjangoUnitOfWork
 from welfarekata.webapp.domain.exceptions import NoEnoughCreditsException
 from welfarekata.webapp.serializers.requests.purchase.purchase_create_serializer import PurchaseCreateSerializer
 from welfarekata.webapp.serializers.responses.purchase_serializer import PurchaseSerializer
-from welfarekata.webapp.services.purchase_service import PurchaseService
+from welfarekata.webapp.services import PurchaseService
 from welfarekata.webapp.serializers.requests import ExternalIdSerializer
 
 from rest_framework.response import Response
@@ -22,12 +22,7 @@ class PurchaseViewSet(ViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
         purchase_id = serialized_id.validated_data["id"]
-        purchase_dto = PurchaseService(
-            DjangoUnitOfWork(),
-            DjangoPurchaseRepository(),
-            DjangoProductRepository(),
-            DjangoAccountRepository(),
-        ).get_purchase(purchase_id=purchase_id)
+        purchase_dto = PurchaseService(DjangoUnitOfWork()).get_purchase(purchase_id=purchase_id)
 
         if purchase_dto is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -45,24 +40,14 @@ class PurchaseViewSet(ViewSet):
         validated_data = serialized_creation_request.validated_data
 
         try:
-            purchase_dto = PurchaseService(
-                DjangoUnitOfWork(),
-                DjangoPurchaseRepository(),
-                DjangoProductRepository(),
-                DjangoAccountRepository(),
-            ).do_purchase(**validated_data)
+            purchase_dto = PurchaseService(DjangoUnitOfWork()).do_purchase(**validated_data)
 
             return Response(data=PurchaseSerializer(purchase_dto).data, status=status.HTTP_201_CREATED)
         except NoEnoughCreditsException:
             return Response(data={"message": "No enough credits for this purchase"}, status=status.HTTP_409_CONFLICT)
 
     def list(self, request):
-        purchase_dtos = PurchaseService(
-            DjangoUnitOfWork(),
-            DjangoPurchaseRepository(),
-            DjangoProductRepository(),
-            DjangoAccountRepository(),
-        ).list_purchases()
+        purchase_dtos = PurchaseService(DjangoUnitOfWork()).list_purchases()
 
         return Response(
             data=[

@@ -1,6 +1,8 @@
 import uuid
 from typing import Optional, List
 
+from django.db import transaction
+
 from welfarekata.webapp.domain import ProductRepository
 from welfarekata.webapp import domain
 from welfarekata.webapp import models as django_models
@@ -8,6 +10,9 @@ from welfarekata.webapp.domain.exceptions import ProductNotFoundException
 
 
 class DjangoProductRepository(ProductRepository):
+    def __init__(self, atomic: transaction.Atomic):
+        self.atomic = atomic
+
     def get(self, product_id: uuid.UUID) -> Optional[domain.Product]:
         try:
             django_product = django_models.Product.objects.get(external_id=product_id)

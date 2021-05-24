@@ -1,4 +1,4 @@
-from welfarekata.webapp.repositories.django_product_repository import DjangoProductRepository
+from welfarekata.webapp.repositories.django_unit_of_work import DjangoUnitOfWork
 from welfarekata.webapp.dtos import ProductDto
 from welfarekata.webapp.models.product import Product
 from welfarekata.webapp.services import ProductService
@@ -7,8 +7,11 @@ from django.test import TestCase
 
 class TestProductService(TestCase):
     def test_create_product(self):
-        created_product_dto = ProductService(DjangoProductRepository()).create_product(
-            name="Name", description="Descripton", type=ProductDto.Type.BASIC)
+        created_product_dto = ProductService(DjangoUnitOfWork()).create_product(
+            name="Name",
+            description="Descripton",
+            type=ProductDto.Type.BASIC
+        )
 
         products_on_db = Product.objects.all()
         self.assertEqual(len(products_on_db), 1)
@@ -30,8 +33,7 @@ class TestProductService(TestCase):
                           type=Product.Type.BASIC.value)
         product.save()
 
-        product_dto = ProductService(DjangoProductRepository()).get_product(
-            product_id=product.external_id)
+        product_dto = ProductService(DjangoUnitOfWork()).get_product(product_id=product.external_id)
 
         self.assertIsNotNone(product_dto)
         self.assertEqual(product_dto.id, product.external_id)
@@ -51,7 +53,7 @@ class TestProductService(TestCase):
                               type=Product.Type.GOLD.value)
         product_two.save()
 
-        product_dtos = ProductService(DjangoProductRepository()).list_products()
+        product_dtos = ProductService(DjangoUnitOfWork()).list_products()
 
         self.assertIsNotNone(product_dtos)
         self.assertEqual(len(product_dtos), 2)
@@ -73,11 +75,12 @@ class TestProductService(TestCase):
                           type=Product.Type.BASIC.value)
         product.save()
 
-        product_dto = ProductService(DjangoProductRepository()).update_product(
+        product_dto = ProductService(DjangoUnitOfWork()).update_product(
             product_id=product.external_id,
             name="Updated Product",
             description="Updated Description",
-            type=ProductDto.Type.PREMIUM)
+            type=ProductDto.Type.PREMIUM
+        )
 
         self.assertIsNotNone(product_dto)
         self.assertEqual(product_dto.id, product.external_id)
