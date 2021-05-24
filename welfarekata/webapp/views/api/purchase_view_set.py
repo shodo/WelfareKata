@@ -1,6 +1,7 @@
-from webapp.repositories.django_account_repository import DjangoAccountRepository
-from webapp.repositories.django_product_repository import DjangoProductRepository
-from webapp.repositories.django_purchase_repository import DjangoPurchaseRepository
+from welfarekata.webapp.repositories.django_account_repository import DjangoAccountRepository
+from welfarekata.webapp.repositories.django_product_repository import DjangoProductRepository
+from welfarekata.webapp.repositories.django_purchase_repository import DjangoPurchaseRepository
+from welfarekata.webapp.repositories.django_unit_of_work import DjangoUnitOfWork
 from welfarekata.webapp.domain.exceptions import NoEnoughCreditsException
 from welfarekata.webapp.serializers.requests.purchase.purchase_create_serializer import PurchaseCreateSerializer
 from welfarekata.webapp.serializers.responses.purchase_serializer import PurchaseSerializer
@@ -22,6 +23,7 @@ class PurchaseViewSet(ViewSet):
 
         purchase_id = serialized_id.validated_data["id"]
         purchase_dto = PurchaseService(
+            DjangoUnitOfWork(),
             DjangoPurchaseRepository(),
             DjangoProductRepository(),
             DjangoAccountRepository(),
@@ -44,6 +46,7 @@ class PurchaseViewSet(ViewSet):
 
         try:
             purchase_dto = PurchaseService(
+                DjangoUnitOfWork(),
                 DjangoPurchaseRepository(),
                 DjangoProductRepository(),
                 DjangoAccountRepository(),
@@ -55,6 +58,7 @@ class PurchaseViewSet(ViewSet):
 
     def list(self, request):
         purchase_dtos = PurchaseService(
+            DjangoUnitOfWork(),
             DjangoPurchaseRepository(),
             DjangoProductRepository(),
             DjangoAccountRepository(),

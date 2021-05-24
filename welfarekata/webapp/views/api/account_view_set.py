@@ -1,4 +1,4 @@
-from webapp.repositories.django_account_repository import DjangoAccountRepository
+from welfarekata.webapp.repositories.django_account_repository import DjangoAccountRepository
 from welfarekata.webapp.domain.exceptions import AccountAlreadyActivatedException
 from welfarekata.webapp.serializers.requests.account.account_create_serializer import AccountCreateSerializer
 from welfarekata.webapp.serializers.responses.account_info_serializer import AccountSerializer

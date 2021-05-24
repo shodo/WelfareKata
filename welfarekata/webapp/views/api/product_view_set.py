@@ -1,4 +1,4 @@
-from webapp.repositories.django_product_repository import DjangoProductRepository
+from welfarekata.webapp.repositories.django_product_repository import DjangoProductRepository
 from welfarekata.webapp.domain.repositories.product_repository import ProductRepository
 from welfarekata.webapp.serializers.requests.product import ProductCreateSerializer
 from welfarekata.webapp.serializers.requests.product import ProductPartialUpdateSerializer
