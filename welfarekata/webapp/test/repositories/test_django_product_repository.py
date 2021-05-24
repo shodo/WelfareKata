@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.test import TestCase
 
 from welfarekata.webapp.repositories.django_product_repository import DjangoProductRepository
@@ -15,7 +16,7 @@ class TestDjangoProductRepository(TestCase):
         )
 
         # SUT
-        added_product = DjangoProductRepository().add(product)
+        added_product = DjangoProductRepository(transaction.atomic()).add(product)
         orm_added_product = django_models.Product.objects.all()[0]
 
         # Asserts
@@ -35,7 +36,7 @@ class TestDjangoProductRepository(TestCase):
         orm_product.save()
 
         # SUT
-        retrieved_product = DjangoProductRepository().get(orm_product.external_id)
+        retrieved_product = DjangoProductRepository(transaction.atomic()).get(orm_product.external_id)
 
         # Asserts
         self.assertEqual(orm_product.external_id, retrieved_product.id)
@@ -60,7 +61,7 @@ class TestDjangoProductRepository(TestCase):
         orm_product_two.save()
 
         # SUT
-        retrieved_products = DjangoProductRepository().list()
+        retrieved_products = DjangoProductRepository(transaction.atomic()).list()
 
         # Asserts
         retrieved_product_one = next(iter([product for product in retrieved_products
@@ -93,7 +94,7 @@ class TestDjangoProductRepository(TestCase):
             description="updated_description",
             type=domain.Product.Type.GOLD
         )
-        updated_product = DjangoProductRepository().update(new_product)
+        updated_product = DjangoProductRepository(transaction.atomic()).update(new_product)
         updated_orm_product = django_models.Product.objects.get(id=orm_product.id)
 
         # Asserts

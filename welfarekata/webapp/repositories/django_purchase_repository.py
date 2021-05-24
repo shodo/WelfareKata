@@ -1,6 +1,8 @@
 import uuid
 from typing import Optional, List
 
+from django.db import transaction
+
 from welfarekata.webapp.domain import PurchaseRepository
 from welfarekata.webapp import domain
 from welfarekata.webapp import models as django_models
@@ -8,6 +10,9 @@ from welfarekata.webapp.domain.exceptions import AccountNotFoundException, Produ
 
 
 class DjangoPurchaseRepository(PurchaseRepository):
+    def __init__(self, atomic: transaction.Atomic):
+        self.atomic = atomic
+
     def get(self, purchase_id: uuid.UUID) -> Optional[domain.Purchase]:
         try:
             django_purchase = django_models.Purchase.objects.get(external_id=purchase_id)

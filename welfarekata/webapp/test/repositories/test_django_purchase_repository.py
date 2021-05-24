@@ -2,6 +2,7 @@ import uuid
 from datetime import date, datetime
 
 from dateutil.tz import UTC
+from django.db import transaction
 from django.test import TestCase
 
 from welfarekata.webapp.repositories.django_purchase_repository import DjangoPurchaseRepository
@@ -38,7 +39,7 @@ class TestDjangoPurchaseRepository(TestCase):
         )
 
         # SUT
-        added_purchase = DjangoPurchaseRepository().add(purchase)
+        added_purchase = DjangoPurchaseRepository(transaction.atomic()).add(purchase)
         orm_added_purchase = django_models.Purchase.objects.all()[0]
 
         # Asserts
@@ -58,7 +59,7 @@ class TestDjangoPurchaseRepository(TestCase):
         orm_purchase.save()
 
         # SUT
-        retrieved_purchase = DjangoPurchaseRepository().get(orm_purchase.external_id)
+        retrieved_purchase = DjangoPurchaseRepository(transaction.atomic()).get(orm_purchase.external_id)
 
         # Asserts
         self.assertEqual(orm_purchase.external_id, retrieved_purchase.id)
@@ -84,7 +85,7 @@ class TestDjangoPurchaseRepository(TestCase):
         orm_purchase_two.save()
 
         # SUT
-        retrieved_purchases = DjangoPurchaseRepository().list()
+        retrieved_purchases = DjangoPurchaseRepository(transaction.atomic()).list()
 
         # Asserts
         retrieved_purchase_one = next(iter([purchase for purchase in retrieved_purchases
