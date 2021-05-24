@@ -1,6 +1,6 @@
-from welfarekata.webapp.repositories.django_unit_of_work import DjangoUnitOfWork
+from welfarekata.webapp.repositories.django.django_unit_of_work import DjangoUnitOfWork
 from welfarekata.webapp.dtos import ProductDto
-from welfarekata.webapp.models.product import Product
+from welfarekata.webapp.orm_models.django.product import Product
 from welfarekata.webapp.domain.services import ProductService
 from django.test import TestCase
 

@@ -3,13 +3,13 @@ from unittest import mock
 import uuid
 from dateutil.tz import UTC
 
-from welfarekata.webapp.repositories.django_unit_of_work import DjangoUnitOfWork
+from welfarekata.webapp.repositories.django.django_unit_of_work import DjangoUnitOfWork
 from welfarekata.webapp.domain.exceptions import NoEnoughCreditsException
 from welfarekata.webapp.domain.exceptions import ProductNotFoundException, AccountNotFoundException
-from welfarekata.webapp.models.account import Account
+from welfarekata.webapp.orm_models.django.account import Account
 from welfarekata.webapp.domain.services import PurchaseService
-from welfarekata.webapp.models.purchase import Purchase
-from welfarekata.webapp.models.product import Product
+from welfarekata.webapp.orm_models.django.purchase import Purchase
+from welfarekata.webapp.orm_models.django.product import Product
 from django.test import TestCase
 
 

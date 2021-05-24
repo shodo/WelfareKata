@@ -1,12 +1,10 @@
-from django.db import transaction
-from django.test import TestCase
-
-from welfarekata.webapp.repositories.django_product_repository import DjangoProductRepository
+from welfarekata.webapp.repositories.sql_alchemy.sqlalchemy_product_repository import SqlAlchemyProductRepository
+from welfarekata.webapp.test.sql_alchemy_test_case import SqlAlchemyTestCase
 from welfarekata.webapp import domain
-from welfarekata.webapp import models as django_models
+from welfarekata.webapp.orm_models import sql_alchemy as sqla_models
 
 
-class TestDjangoProductRepository(TestCase):
+class TestSqlAlchemyProductRepository(SqlAlchemyTestCase):
     def test_add(self):
         # Setup
         product = domain.Product(
@@ -15,53 +13,64 @@ class TestDjangoProductRepository(TestCase):
             type=domain.Product.Type.BASIC,
         )
 
+        session = self.session_factory()
+
         # SUT
-        added_product = DjangoProductRepository(transaction.atomic()).add(product)
-        orm_added_product = django_models.Product.objects.all()[0]
+        added_product = SqlAlchemyProductRepository(session).add(product)
+        session.commit()
+
+        orm_added_product = session.query(sqla_models.Product).one()
 
         # Asserts
         self.assertEqual(added_product, product)
         self.assertEqual(orm_added_product.external_id, added_product.id)
         self.assertEqual(orm_added_product.name, added_product.name)
         self.assertEqual(orm_added_product.description, added_product.description)
-        self.assertEqual(orm_added_product.type, django_models.Product.Type(added_product.type.value).value)
+        self.assertEqual(orm_added_product.type, sqla_models.Product.Type(added_product.type.value).value)
 
     def test_get(self):
         # Setup
-        orm_product = django_models.Product(
+        session = self.session_factory()
+
+        orm_product = sqla_models.Product(
             name="name",
             description="description",
-            type=django_models.Product.Type.BASIC.value
+            type=sqla_models.Product.Type.BASIC.value
         )
-        orm_product.save()
+        session.add(orm_product)
+        session.commit()
 
         # SUT
-        retrieved_product = DjangoProductRepository(transaction.atomic()).get(orm_product.external_id)
+        retrieved_product = SqlAlchemyProductRepository(session).get(orm_product.external_id)
 
         # Asserts
         self.assertEqual(orm_product.external_id, retrieved_product.id)
         self.assertEqual(orm_product.name, retrieved_product.name)
         self.assertEqual(orm_product.description, retrieved_product.description)
-        self.assertEqual(orm_product.type, django_models.Product.Type(retrieved_product.type.value).value)
+        self.assertEqual(orm_product.type, sqla_models.Product.Type(retrieved_product.type.value).value)
 
     def test_list(self):
         # Setup
-        orm_product_one = django_models.Product(
+        session = self.session_factory()
+
+        orm_product_one = sqla_models.Product(
             name="name1",
             description="description1",
-            type=django_models.Product.Type.BASIC.value
+            type=sqla_models.Product.Type.BASIC.value
         )
-        orm_product_one.save()
+        session.add(orm_product_one)
 
-        orm_product_two = django_models.Product(
+        orm_product_two = sqla_models.Product(
             name="name2",
             description="description2",
-            type=django_models.Product.Type.GOLD.value
+            type=sqla_models.Product.Type.GOLD.value
         )
-        orm_product_two.save()
+        session.add(orm_product_two)
+
+        session.commit()
 
         # SUT
-        retrieved_products = DjangoProductRepository(transaction.atomic()).list()
+        retrieved_products = SqlAlchemyProductRepository(session).list()
 
         # Asserts
         retrieved_product_one = next(iter([product for product in retrieved_products
@@ -69,23 +78,27 @@ class TestDjangoProductRepository(TestCase):
         self.assertEqual(orm_product_one.external_id, retrieved_product_one.id)
         self.assertEqual(orm_product_one.name, retrieved_product_one.name)
         self.assertEqual(orm_product_one.description, retrieved_product_one.description)
-        self.assertEqual(orm_product_one.type, django_models.Product.Type(retrieved_product_one.type.value).value)
+        self.assertEqual(orm_product_one.type, sqla_models.Product.Type(retrieved_product_one.type.value).value)
 
         retrieved_product_two = next(iter([product for product in retrieved_products
                                            if product.id == orm_product_two.external_id]), None)
         self.assertEqual(orm_product_two.external_id, retrieved_product_two.id)
         self.assertEqual(orm_product_two.name, retrieved_product_two.name)
         self.assertEqual(orm_product_two.description, retrieved_product_two.description)
-        self.assertEqual(orm_product_two.type, django_models.Product.Type(retrieved_product_two.type.value).value)
+        self.assertEqual(orm_product_two.type, sqla_models.Product.Type(retrieved_product_two.type.value).value)
 
     def test_update(self):
         # Setup
-        orm_product = django_models.Product(
+        session = self.session_factory()
+
+        orm_product = sqla_models.Product(
             name="name1",
             description="description1",
-            type=django_models.Product.Type.BASIC.value
+            type=sqla_models.Product.Type.BASIC.value
         )
-        orm_product.save()
+
+        session.add(orm_product)
+        session.commit()
 
         # SUT
         new_product = domain.Product(
@@ -94,8 +107,8 @@ class TestDjangoProductRepository(TestCase):
             description="updated_description",
             type=domain.Product.Type.GOLD
         )
-        updated_product = DjangoProductRepository(transaction.atomic()).update(new_product)
-        updated_orm_product = django_models.Product.objects.get(id=orm_product.id)
+        updated_product = SqlAlchemyProductRepository(session).update(new_product)
+        updated_orm_product = session.query(sqla_models.Product).one()
 
         # Asserts
         self.assertEqual(updated_product.id, new_product.id)
@@ -106,4 +119,4 @@ class TestDjangoProductRepository(TestCase):
         self.assertEqual(updated_orm_product.external_id, updated_product.id)
         self.assertEqual(updated_orm_product.name, updated_product.name)
         self.assertEqual(updated_orm_product.description, updated_product.description)
-        self.assertEqual(updated_orm_product.type, django_models.Product.Type(updated_product.type.value).value)
+        self.assertEqual(updated_orm_product.type, sqla_models.Product.Type(updated_product.type.value).value)

@@ -2,8 +2,8 @@ import uuid
 
 from django.utils import timezone
 
-from welfarekata.webapp.models.product import Product
-from welfarekata.webapp.models.account import Account
+from welfarekata.webapp.orm_models.django.product import Product
+from welfarekata.webapp.orm_models.django.account import Account
 from django.db import models
 
 

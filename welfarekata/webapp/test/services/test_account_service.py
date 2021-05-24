@@ -1,10 +1,10 @@
 from datetime import datetime, date
 import uuid
 
-from welfarekata.webapp.repositories.django_unit_of_work import DjangoUnitOfWork
+from welfarekata.webapp.repositories.django.django_unit_of_work import DjangoUnitOfWork
 from welfarekata.webapp.domain.exceptions import AccountAlreadyActivatedException
 from welfarekata.webapp.domain.services import AccountService
-from welfarekata.webapp.models.account import Account
+from welfarekata.webapp.orm_models.django.account import Account
 from django.test import TestCase
 
 

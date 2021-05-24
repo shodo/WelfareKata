@@ -6,7 +6,7 @@ from django.db import transaction
 from welfarekata.webapp.domain.exceptions import AccountNotFoundException
 from welfarekata.webapp.domain import AccountRepository
 from welfarekata.webapp import domain
-from welfarekata.webapp import models as django_models
+from welfarekata.webapp.orm_models import django as django_models
 
 
 class DjangoAccountRepository(AccountRepository):

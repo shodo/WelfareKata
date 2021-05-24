@@ -1,4 +1,4 @@
-from welfarekata.webapp.repositories.django_unit_of_work import DjangoUnitOfWork
+from welfarekata.webapp.repositories.django.django_unit_of_work import DjangoUnitOfWork
 from welfarekata.webapp.serializers.requests.product import ProductCreateSerializer
 from welfarekata.webapp.serializers.requests.product import ProductPartialUpdateSerializer
 from welfarekata.webapp.serializers.requests import ExternalIdSerializer

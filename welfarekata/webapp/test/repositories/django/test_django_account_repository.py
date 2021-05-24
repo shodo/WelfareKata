@@ -4,9 +4,9 @@ from datetime import date
 from django.db import transaction
 from django.test import TestCase
 
-from welfarekata.webapp.repositories.django_account_repository import DjangoAccountRepository
+from welfarekata.webapp.repositories.django.django_account_repository import DjangoAccountRepository
 from welfarekata.webapp import domain
-from welfarekata.webapp import models as django_models
+from welfarekata.webapp.orm_models import django as django_models
 
 
 class TestDjangoAccountRepository(TestCase):

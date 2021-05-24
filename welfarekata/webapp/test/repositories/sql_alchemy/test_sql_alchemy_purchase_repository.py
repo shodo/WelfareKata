@@ -1,33 +1,31 @@
 import uuid
 from datetime import date, datetime
-
-from dateutil.tz import UTC
-from django.db import transaction
-from django.test import TestCase
-
-from welfarekata.webapp.repositories.django_purchase_repository import DjangoPurchaseRepository
+from welfarekata.webapp.repositories.sql_alchemy.sqlalchemy_purchase_repository import SqlAlchemyPurchaseRepository
+from welfarekata.webapp.test.sql_alchemy_test_case import SqlAlchemyTestCase
 from welfarekata.webapp import domain
-from welfarekata.webapp import models as django_models
+from welfarekata.webapp.orm_models import sql_alchemy as sqla_models
 
 
-class TestDjangoPurchaseRepository(TestCase):
-    @classmethod
-    def setUpClass(cls):
-        super(TestDjangoPurchaseRepository, cls).setUpClass()
+class TestSqlAlchemyPurchaseRepository(SqlAlchemyTestCase):
+    def setUp(self):
+        super(TestSqlAlchemyPurchaseRepository, self).setUp()
 
-        cls.orm_account = django_models.Account(
+        self.orm_account = sqla_models.Account(
             employee_external_id=uuid.uuid4(),
             creation_date=date.today(),
             credits=100,
         )
-        cls.orm_account.save()
 
-        cls.orm_product = django_models.Product(
+        self.orm_product = sqla_models.Product(
             name="name",
             description="description",
-            type=django_models.Product.Type.BASIC.value
+            type=sqla_models.Product.Type.BASIC.value
         )
-        cls.orm_product.save()
+
+        session = self.session_factory(expire_on_commit=False)
+        session.add(self.orm_account)
+        session.add(self.orm_product)
+        session.commit()
 
     def test_add(self):
         # Setup
@@ -35,12 +33,16 @@ class TestDjangoPurchaseRepository(TestCase):
             account_id=self.orm_account.external_id,
             product_id=self.orm_product.external_id,
             credits=100,
-            creation_date=datetime.now(tz=UTC)
+            creation_date=datetime.now()
         )
 
+        session = self.session_factory()
+
         # SUT
-        added_purchase = DjangoPurchaseRepository(transaction.atomic()).add(purchase)
-        orm_added_purchase = django_models.Purchase.objects.all()[0]
+        added_purchase = SqlAlchemyPurchaseRepository(session).add(purchase)
+        session.commit()
+
+        orm_added_purchase = session.query(sqla_models.Purchase).one()
 
         # Asserts
         self.assertEqual(orm_added_purchase.external_id, added_purchase.id)
@@ -51,15 +53,18 @@ class TestDjangoPurchaseRepository(TestCase):
 
     def test_get(self):
         # Setup
-        orm_purchase = django_models.Purchase(
+        session = self.session_factory()
+
+        orm_purchase = sqla_models.Purchase(
             account_id=self.orm_account.id,
             product_id=self.orm_product.id,
             spent_credits=100,
         )
-        orm_purchase.save()
+        session.add(orm_purchase)
+        session.commit()
 
         # SUT
-        retrieved_purchase = DjangoPurchaseRepository(transaction.atomic()).get(orm_purchase.external_id)
+        retrieved_purchase = SqlAlchemyPurchaseRepository(session).get(orm_purchase.external_id)
 
         # Asserts
         self.assertEqual(orm_purchase.external_id, retrieved_purchase.id)
@@ -70,22 +75,26 @@ class TestDjangoPurchaseRepository(TestCase):
 
     def test_list(self):
         # Setup
-        orm_purchase_one = django_models.Purchase(
+        session = self.session_factory()
+
+        orm_purchase_one = sqla_models.Purchase(
             account_id=self.orm_account.id,
             product_id=self.orm_product.id,
             spent_credits=100,
         )
-        orm_purchase_one.save()
 
-        orm_purchase_two = django_models.Purchase(
+        orm_purchase_two = sqla_models.Purchase(
             account_id=self.orm_account.id,
             product_id=self.orm_product.id,
             spent_credits=200,
         )
-        orm_purchase_two.save()
+
+        session.add(orm_purchase_one)
+        session.add(orm_purchase_two)
+        session.commit()
 
         # SUT
-        retrieved_purchases = DjangoPurchaseRepository(transaction.atomic()).list()
+        retrieved_purchases = SqlAlchemyPurchaseRepository(session).list()
 
         # Asserts
         retrieved_purchase_one = next(iter([purchase for purchase in retrieved_purchases

@@ -1,4 +1,4 @@
-from welfarekata.webapp.repositories.django_unit_of_work import DjangoUnitOfWork
+from welfarekata.webapp.repositories.django.django_unit_of_work import DjangoUnitOfWork
 from welfarekata.webapp.domain.exceptions import NoEnoughCreditsException
 from welfarekata.webapp.serializers.requests.purchase.purchase_create_serializer import PurchaseCreateSerializer
 from welfarekata.webapp.serializers.responses.purchase_serializer import PurchaseSerializer
