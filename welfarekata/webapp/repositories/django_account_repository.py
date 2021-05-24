@@ -18,7 +18,7 @@ class DjangoAccountRepository(AccountRepository):
             base_query = django_models.Account.objects
 
             if for_update:
-                base_query.select_for_update()
+                base_query = base_query.select_for_update()
 
             django_account = base_query.get(external_id=account_id)
             return self._from_django_account_to_domain_account(django_account)

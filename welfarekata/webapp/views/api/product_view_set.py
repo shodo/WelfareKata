@@ -1,10 +1,9 @@
 from welfarekata.webapp.repositories.django_unit_of_work import DjangoUnitOfWork
-from welfarekata.webapp.repositories.django_product_repository import DjangoProductRepository
 from welfarekata.webapp.serializers.requests.product import ProductCreateSerializer
 from welfarekata.webapp.serializers.requests.product import ProductPartialUpdateSerializer
 from welfarekata.webapp.serializers.requests import ExternalIdSerializer
 from welfarekata.webapp.serializers.responses import ProductSerializer
-from welfarekata.webapp.services import ProductService
+from welfarekata.webapp.domain.services import ProductService
 
 from rest_framework.response import Response
 from rest_framework import status

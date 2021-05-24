@@ -8,7 +8,7 @@ from welfarekata.webapp.domain import UnitOfWork
 from welfarekata.webapp.domain import Purchase
 from welfarekata.webapp.domain.exceptions import NoEnoughCreditsException
 from welfarekata.webapp.domain.exceptions import AccountNotFoundException, ProductNotFoundException
-from welfarekata.webapp.services.pricing_service import PricingService
+from welfarekata.webapp.domain.services.pricing_service import PricingService
 from welfarekata.webapp.dtos.purchase_dto import PurchaseDto
 
 

@@ -2,7 +2,7 @@ from welfarekata.webapp.repositories.django_unit_of_work import DjangoUnitOfWork
 from welfarekata.webapp.domain.exceptions import AccountAlreadyActivatedException
 from welfarekata.webapp.serializers.requests.account.account_create_serializer import AccountCreateSerializer
 from welfarekata.webapp.serializers.responses.account_info_serializer import AccountSerializer
-from welfarekata.webapp.services import AccountService
+from welfarekata.webapp.domain.services import AccountService
 from welfarekata.webapp.serializers.requests import ExternalIdSerializer
 
 from rest_framework.response import Response
