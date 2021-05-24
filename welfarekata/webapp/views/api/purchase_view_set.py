@@ -1,11 +1,8 @@
-from welfarekata.webapp.repositories.django_account_repository import DjangoAccountRepository
-from welfarekata.webapp.repositories.django_product_repository import DjangoProductRepository
-from welfarekata.webapp.repositories.django_purchase_repository import DjangoPurchaseRepository
 from welfarekata.webapp.repositories.django_unit_of_work import DjangoUnitOfWork
 from welfarekata.webapp.domain.exceptions import NoEnoughCreditsException
 from welfarekata.webapp.serializers.requests.purchase.purchase_create_serializer import PurchaseCreateSerializer
 from welfarekata.webapp.serializers.responses.purchase_serializer import PurchaseSerializer
-from welfarekata.webapp.services import PurchaseService
+from welfarekata.webapp.domain.services import PurchaseService
 from welfarekata.webapp.serializers.requests import ExternalIdSerializer
 
 from rest_framework.response import Response

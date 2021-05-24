@@ -7,7 +7,7 @@ from welfarekata.webapp.repositories.django_unit_of_work import DjangoUnitOfWork
 from welfarekata.webapp.domain.exceptions import NoEnoughCreditsException
 from welfarekata.webapp.domain.exceptions import ProductNotFoundException, AccountNotFoundException
 from welfarekata.webapp.models.account import Account
-from welfarekata.webapp.services import PurchaseService
+from welfarekata.webapp.domain.services import PurchaseService
 from welfarekata.webapp.models.purchase import Purchase
 from welfarekata.webapp.models.product import Product
 from django.test import TestCase
@@ -38,7 +38,7 @@ class TestPurchaseService(TestCase):
                 DjangoUnitOfWork()
             ).do_purchase(account_id=invalid_account_id, product_id=product.external_id)
 
-    @mock.patch("welfarekata.webapp.services.purchase_service.PricingService")
+    @mock.patch("welfarekata.webapp.domain.services.purchase_service.PricingService")
     def test_create_when_price_greater_then_credits_raise_exception(
             self, pricing_service_mock):
         account = Account(credits=200,
@@ -58,7 +58,7 @@ class TestPurchaseService(TestCase):
                 DjangoUnitOfWork()
             ).do_purchase(account_id=account.external_id, product_id=product.external_id)
 
-    @mock.patch("welfarekata.webapp.services.purchase_service.PricingService")
+    @mock.patch("welfarekata.webapp.domain.services.purchase_service.PricingService")
     def test_create_when_everything_is_valid(self, pricing_service_mock):
         account = Account(credits=200,
                           employee_external_id=uuid.uuid4(),
