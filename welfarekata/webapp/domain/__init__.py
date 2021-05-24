@@ -5,3 +5,5 @@ from .entities.purchase import Purchase
 from .repositories.account_repository import AccountRepository
 from .repositories.product_repository import ProductRepository
 from .repositories.purchase_repository import PurchaseRepository
+
+from .repositories.unit_of_work import UnitOfWork

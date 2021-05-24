@@ -4,21 +4,23 @@ from typing import Optional, List
 
 from dateutil import tz
 
+from welfarekata.webapp.domain import UnitOfWork
 from welfarekata.webapp.domain import Purchase, PurchaseRepository, AccountRepository, ProductRepository
 from welfarekata.webapp.domain.exceptions import NoEnoughCreditsException
 from welfarekata.webapp.domain.exceptions import AccountNotFoundException, ProductNotFoundException
 from welfarekata.webapp.services.pricing_service import PricingService
 from welfarekata.webapp.dtos.purchase_dto import PurchaseDto
-from django.db import transaction
 
 
 class PurchaseService:
     def __init__(
         self,
+        unit_of_work: UnitOfWork,
         purchase_repository: PurchaseRepository,
         product_repository: ProductRepository,
         account_repository: AccountRepository
     ):
+        self.uow = unit_of_work
         self.purchase_repository = purchase_repository
         self.product_repository = product_repository
         self.account_repository = account_repository
@@ -28,7 +30,7 @@ class PurchaseService:
         return PurchaseDto.from_entity(purchase) if purchase else None
 
     def do_purchase(self, account_id: uuid.UUID, product_id: uuid.UUID) -> PurchaseDto:
-        with transaction.atomic():
+        with self.uow:
             account = self.account_repository.get(account_id, for_update=True)
             if account is None:
                 raise AccountNotFoundException()

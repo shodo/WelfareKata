@@ -2,6 +2,8 @@ from datetime import datetime, tzinfo
 from unittest import mock
 import uuid
 from dateutil.tz import UTC
+
+from webapp.repositories.django_unit_of_work import DjangoUnitOfWork
 from welfarekata.webapp.domain.exceptions import NoEnoughCreditsException
 from welfarekata.webapp.repositories.django_account_repository import DjangoAccountRepository
 from welfarekata.webapp.repositories.django_product_repository import DjangoProductRepository
@@ -24,6 +26,7 @@ class TestPurchaseService(TestCase):
         with self.assertRaises(ProductNotFoundException):
             invalid_product_id = uuid.uuid4()
             PurchaseService(
+                DjangoUnitOfWork(),
                 DjangoPurchaseRepository(),
                 DjangoProductRepository(),
                 DjangoAccountRepository()
@@ -38,6 +41,7 @@ class TestPurchaseService(TestCase):
         with self.assertRaises(AccountNotFoundException):
             invalid_account_id = uuid.uuid4()
             PurchaseService(
+                DjangoUnitOfWork(),
                 DjangoPurchaseRepository(),
                 DjangoProductRepository(),
                 DjangoAccountRepository()
@@ -60,6 +64,7 @@ class TestPurchaseService(TestCase):
 
         with self.assertRaises(NoEnoughCreditsException):
             PurchaseService(
+                DjangoUnitOfWork(),
                 DjangoPurchaseRepository(),
                 DjangoProductRepository(),
                 DjangoAccountRepository()
@@ -80,6 +85,7 @@ class TestPurchaseService(TestCase):
         pricing_service_mock.calculate_price.return_value = 100
 
         created_purchase_dto = PurchaseService(
+            DjangoUnitOfWork(),
             DjangoPurchaseRepository(),
             DjangoProductRepository(),
             DjangoAccountRepository()
@@ -120,6 +126,7 @@ class TestPurchaseService(TestCase):
         purchase.save()
 
         purchase_dto = PurchaseService(
+            DjangoUnitOfWork(),
             DjangoPurchaseRepository(),
             DjangoProductRepository(),
             DjangoAccountRepository()
@@ -157,6 +164,7 @@ class TestPurchaseService(TestCase):
         purchase_two.save()
 
         purchase_dtos = PurchaseService(
+            DjangoUnitOfWork(),
             DjangoPurchaseRepository(),
             DjangoProductRepository(),
             DjangoAccountRepository()
