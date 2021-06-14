@@ -1,5 +1,5 @@
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 
 
@@ -13,5 +13,5 @@ class Product:
     name: str
     description: str
     type: "Type"
-    id: uuid.UUID = uuid.uuid4()
+    id: uuid.UUID = field(default_factory=uuid.uuid4)
 

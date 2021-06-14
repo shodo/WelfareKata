@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 import uuid
 
@@ -8,4 +8,4 @@ class Account:
     employee_id: uuid.UUID
     activation_date: date
     credits: int
-    id: uuid.UUID = uuid.uuid4()
+    id: uuid.UUID = field(default_factory=uuid.uuid4)
