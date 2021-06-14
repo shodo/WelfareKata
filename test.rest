@@ -1,22 +1,22 @@
 ### Create Account
-POST http://localhost:8000/api/v1/accounts/
+POST http://localhost:8000/api/v1/accounts/?orm=django
 Content-Type: application/json
 
 {
-  "employee_id": "b07c88b9-5480-4d95-b7ac-2f6d2f6a3c04"
+  "employee_id": "b07c88b9-5480-4d95-b7ac-2f6d2f6a3c06"
 }
 
 ### Retrieve account
-GET http://localhost:8000/api/v1/accounts/86c0f076-8422-493c-acd1-b9697d581147
+GET http://localhost:8000/api/v1/accounts/8e234ea7-9e76-4da1-bfda-bfd120459a5d
 Accept: application/json
 
 ### list accounts
-GET http://localhost:8000/api/v1/accounts/
+GET http://localhost:8000/api/v1/accounts/?orm=sqlalchemy
 Accept: application/json
 
 
 ### Create Product
-POST http://localhost:8000/api/v1/products/
+POST http://localhost:8000/api/v1/products/?orm=sqlalchemy
 Content-Type: application/json
 
 {
@@ -26,7 +26,7 @@ Content-Type: application/json
 }
 
 ### list products
-GET http://localhost:8000/api/v1/products/
+GET http://localhost:8000/api/v1/products/?orm=sqlalchemy
 Accept: application/json
 
 ### retrieve products

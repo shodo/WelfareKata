@@ -1,8 +1,7 @@
-from welfarekata.webapp.repositories.django.django_unit_of_work import DjangoUnitOfWork
+from webapp.repositories.sql_alchemy.session_factory import ServiceLocator
 from welfarekata.webapp.domain.exceptions import NoEnoughCreditsException
 from welfarekata.webapp.serializers.requests.purchase.purchase_create_serializer import PurchaseCreateSerializer
 from welfarekata.webapp.serializers.responses.purchase_serializer import PurchaseSerializer
-from welfarekata.webapp.domain.services import PurchaseService
 from welfarekata.webapp.serializers.requests import ExternalIdSerializer
 
 from rest_framework.response import Response
@@ -19,7 +18,11 @@ class PurchaseViewSet(ViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
         purchase_id = serialized_id.validated_data["id"]
-        purchase_dto = PurchaseService(DjangoUnitOfWork()).get_purchase(purchase_id=purchase_id)
+
+        orm = request.query_params.get('orm', None)
+        purchase_service = ServiceLocator(orm).purchase_service()
+
+        purchase_dto = purchase_service.get_purchase(purchase_id=purchase_id)
 
         if purchase_dto is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -37,14 +40,20 @@ class PurchaseViewSet(ViewSet):
         validated_data = serialized_creation_request.validated_data
 
         try:
-            purchase_dto = PurchaseService(DjangoUnitOfWork()).do_purchase(**validated_data)
+            orm = request.query_params.get('orm', None)
+            purchase_service = ServiceLocator(orm).purchase_service()
+
+            purchase_dto = purchase_service.do_purchase(**validated_data)
 
             return Response(data=PurchaseSerializer(purchase_dto).data, status=status.HTTP_201_CREATED)
         except NoEnoughCreditsException:
             return Response(data={"message": "No enough credits for this purchase"}, status=status.HTTP_409_CONFLICT)
 
     def list(self, request):
-        purchase_dtos = PurchaseService(DjangoUnitOfWork()).list_purchases()
+        orm = request.query_params.get('orm', None)
+        purchase_service = ServiceLocator(orm).purchase_service()
+
+        purchase_dtos = purchase_service.list_purchases()
 
         return Response(
             data=[

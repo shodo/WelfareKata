@@ -19,7 +19,7 @@ class ProductService:
         return [ProductDto.from_entity(product) for product in products]
 
     def create_product(self, name: str, description: str, type: ProductDto.Type) -> ProductDto:
-        product = Product(name=name, description=description, type=Product.Type(type.value))
+        product = Product(id=uuid.uuid4(), name=name, description=description, type=Product.Type(type.value))
         self.uow.product_repository.add(product)
 
         return ProductDto.from_entity(product)

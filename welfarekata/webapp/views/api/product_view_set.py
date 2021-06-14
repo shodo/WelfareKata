@@ -1,3 +1,4 @@
+from webapp.repositories.sql_alchemy.session_factory import ServiceLocator
 from welfarekata.webapp.repositories.django.django_unit_of_work import DjangoUnitOfWork
 from welfarekata.webapp.serializers.requests.product import ProductCreateSerializer
 from welfarekata.webapp.serializers.requests.product import ProductPartialUpdateSerializer
@@ -19,7 +20,10 @@ class ProductViewSet(ViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
         product_id = serialized_id.validated_data["id"]
-        product_dto = ProductService(DjangoUnitOfWork()).get_product(product_id=product_id)
+
+        orm = request.query_params.get('orm', None)
+        product_service = ServiceLocator(orm).product_service()
+        product_dto = product_service.get_product(product_id=product_id)
 
         if product_dto is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -38,7 +42,10 @@ class ProductViewSet(ViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
         validated_data = serialized_creation_request.validated_data
-        product_dto = ProductService(DjangoUnitOfWork()).create_product(**validated_data)
+
+        orm = request.query_params.get('orm', None)
+        product_service = ServiceLocator(orm).product_service()
+        product_dto = product_service.create_product(**validated_data)
 
         return Response(
             data=ProductSerializer(product_dto).data,
@@ -46,7 +53,10 @@ class ProductViewSet(ViewSet):
         )
 
     def list(self, request):
-        product_dtos = ProductService(DjangoUnitOfWork()).list_products()
+        orm = request.query_params.get('orm', None)
+        product_service = ServiceLocator(orm).product_service()
+
+        product_dtos = product_service.list_products()
 
         return Response(
             data=[
@@ -75,7 +85,11 @@ class ProductViewSet(ViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
         validated_data = serialized_partial_update_request.validated_data
-        product_dto = ProductService(DjangoUnitOfWork()).update_product(employee_id, **validated_data)
+
+        orm = request.query_params.get('orm', None)
+        product_service = ServiceLocator(orm).product_service()
+
+        product_dto = product_service.update_product(employee_id, **validated_data)
 
         return Response(
             data=ProductSerializer(product_dto).data,

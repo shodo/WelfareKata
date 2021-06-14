@@ -30,7 +30,7 @@ class SqlAlchemyAccountRepository(AccountRepository):
         sqla_accounts = self.session.query(sqla_models.Account)
 
         if employee_id is not None:
-            sqla_accounts = sqla_accounts.filter(employee_external_id=employee_id)
+            sqla_accounts = sqla_accounts.filter(sqla_models.Account.employee_external_id == employee_id)
 
         return [self._from_sqlalchemy_account_to_domain_account(django_account) for django_account in sqla_accounts.all()]
 
@@ -41,7 +41,10 @@ class SqlAlchemyAccountRepository(AccountRepository):
             creation_date=account.activation_date,
             credits=account.credits
         )
+
+        self.session.begin_nested()
         self.session.add(sqla_account)
+        self.session.commit()
 
         return self._from_sqlalchemy_account_to_domain_account(sqla_account)
 

@@ -1,3 +1,5 @@
+from webapp.repositories.sql_alchemy.session_factory import ServiceLocator
+from webapp.repositories.sql_alchemy.sqlalchemy_unit_of_work import SqlAlchemyUnitOfWork
 from welfarekata.webapp.repositories.django.django_unit_of_work import DjangoUnitOfWork
 from welfarekata.webapp.domain.exceptions import AccountAlreadyActivatedException
 from welfarekata.webapp.serializers.requests.account.account_create_serializer import AccountCreateSerializer
@@ -19,7 +21,9 @@ class AccountViewSet(ViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
 
         account_id = serialized_id.validated_data["id"]
-        account_dto = AccountService(DjangoUnitOfWork()).get_account(account_id=account_id)
+        orm = request.query_params.get('orm', None)
+        account_service = ServiceLocator(orm).account_service()
+        account_dto = account_service.get_account(account_id=account_id)
 
         if account_dto is None:
             return Response(status=status.HTTP_404_NOT_FOUND)
@@ -40,7 +44,9 @@ class AccountViewSet(ViewSet):
         validated_data = serialized_creation_request.validated_data
 
         try:
-            account_dto = AccountService(DjangoUnitOfWork()).activate_account(**validated_data)
+            orm = request.query_params.get('orm', None)
+            account_service = ServiceLocator(orm).account_service()
+            account_dto = account_service.activate_account(**validated_data)
 
             return Response(
                 data=AccountSerializer(account_dto).data,
@@ -53,7 +59,9 @@ class AccountViewSet(ViewSet):
             )
 
     def list(self, request):
-        account_dtos = AccountService(DjangoUnitOfWork()).list_accounts()
+        orm = request.query_params.get('orm', None)
+        account_service = ServiceLocator(orm).account_service()
+        account_dtos = account_service.list_accounts()
 
         return Response(
             data=[
